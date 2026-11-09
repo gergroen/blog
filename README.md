@@ -3,7 +3,7 @@
 Developer blog with getting started guides, built with **.NET 10 Blazor WebAssembly**, hosted on
 **GitHub Pages** and installable as a **Progressive Web App**.
 
-Live: https://gergroen.github.io/blog/ · Old blog (2020): https://gergroen.blogspot.com/
+Live: https://gergroen.github.io/blog/
 
 ## Writing a post
 
@@ -13,9 +13,9 @@ Live: https://gergroen.github.io/blog/ · Old blog (2020): https://gergroen.blog
 
    ```markdown
    ---
-   title: "Swagger: Getting started guide - Generate Web API documentation"
+   title: "My post title"
    date: 2026-11-09            # optional, defaults to the date in the file name
-   tags: [ASP.NET Core, Swagger, C#]
+   tags: [.NET, C#]
    summary: One or two sentences for the post list, RSS feed and search engines.
    draft: true                 # optional: visible locally, never published
    ---

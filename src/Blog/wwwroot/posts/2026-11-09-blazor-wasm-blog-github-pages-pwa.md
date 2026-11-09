@@ -5,8 +5,7 @@ tags: [Blazor, WebAssembly, .NET, C#, GitHub Pages, PWA, Markdown]
 summary: How this blog works. A .NET 10 Blazor WebAssembly app that renders Markdown posts, deploys to GitHub Pages with GitHub Actions, and installs on your device as a Progressive Web App.
 ---
 
-Welcome to the new home of my developer blog! The old blog on Blogger had getting started guides
-about Swagger, Topshelf and NHibernate. This one continues with the same kind of practical .NET guides.
+Welcome to my developer blog! It's all about practical getting started guides.
 The first guide is about the blog itself: how to build, host and maintain a blog with
 **Blazor WebAssembly** on **GitHub Pages**, and make it installable as a **Progressive Web App (PWA)**.
 
@@ -70,7 +69,7 @@ public static class MarkdownRenderer
 ```
 
 Code blocks are highlighted with [highlight.js](https://highlightjs.org/), using the Stack Overflow
-themes, just like on the old blog.
+themes.
 
 ## 4. Deploy with GitHub Actions
 
