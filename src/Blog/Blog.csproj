@@ -1,0 +1,58 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <OverrideHtmlAssetPlaceholders>true</OverrideHtmlAssetPlaceholders>
+    <ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
+    <!-- GitHub Pages does not serve pre-compressed .br/.gz files, so don't produce them. -->
+    <CompressionEnabled>false</CompressionEnabled>
+    <!-- The indexer is referenced for build order only (it is never bundled into the app). -->
+    <ValidateExecutableReferencesMatchSelfContained>false</ValidateExecutableReferencesMatchSelfContained>
+
+    <!-- Public URL of the blog, used for sitemap.xml and feed.xml. -->
+    <BlogSiteUrl Condition="'$(BlogSiteUrl)' == ''">https://gergroen.github.io/blog/</BlogSiteUrl>
+    <!-- Drafts are visible in Debug (local preview) but never published in Release. -->
+    <BlogIncludeDrafts Condition="'$(BlogIncludeDrafts)' == '' and '$(Configuration)' == 'Debug'">true</BlogIncludeDrafts>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.14" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.14" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Blog.Core\Blog.Core.csproj" />
+    <!-- Build-order only: the indexer runs during the build to generate posts/index.json, sitemap.xml and feed.xml. -->
+    <ProjectReference Include="..\..\tools\Blog.Indexer\Blog.Indexer.csproj" ReferenceOutputAssembly="false" Private="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <BlogGeneratedFile Include="wwwroot\posts\index.json;wwwroot\sitemap.xml;wwwroot\feed.xml" />
+    <!-- Rebuild the index when a post changes. -->
+    <UpToDateCheckInput Include="wwwroot\posts\*.md" />
+  </ItemGroup>
+
+  <Target Name="GenerateBlogIndex" AfterTargets="ResolveProjectReferences" BeforeTargets="ResolveStaticWebAssetsInputs">
+    <MSBuild Projects="..\..\tools\Blog.Indexer\Blog.Indexer.csproj" Targets="GetTargetPath" Properties="Configuration=$(Configuration)">
+      <Output TaskParameter="TargetOutputs" ItemName="_BlogIndexerPath" />
+    </MSBuild>
+    <PropertyGroup>
+      <_BlogIndexerArgs>index --posts "$(MSBuildProjectDirectory)\wwwroot\posts" --out "$(MSBuildProjectDirectory)\wwwroot" --site-url "$(BlogSiteUrl)"</_BlogIndexerArgs>
+      <_BlogIndexerArgs Condition="'$(BlogIncludeDrafts)' == 'true'">$(_BlogIndexerArgs) --include-drafts</_BlogIndexerArgs>
+    </PropertyGroup>
+    <Exec Command="dotnet &quot;@(_BlogIndexerPath)&quot; $(_BlogIndexerArgs)" />
+
+    <!-- On a clean checkout these files did not exist at evaluation time, so (re)add them as static web assets. -->
+    <ItemGroup>
+      <Content Remove="@(BlogGeneratedFile)" />
+      <Content Include="@(BlogGeneratedFile)" />
+    </ItemGroup>
+  </Target>
+
+</Project>

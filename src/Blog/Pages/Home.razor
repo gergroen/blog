@@ -1,0 +1,64 @@
+﻿@page "/"
+@inject PostService PostService
+
+<PageTitle>@SiteInfo.Title - @SiteInfo.Description</PageTitle>
+<HeadContent>
+    <meta name="description" content="@SiteInfo.Description" />
+</HeadContent>
+
+<section class="intro">
+    <h1>@SiteInfo.Title</h1>
+    <p class="lead">@SiteInfo.Description</p>
+</section>
+
+@if (error)
+{
+    <LoadError OnRetry="LoadAsync" />
+}
+else if (posts is null)
+{
+    <p class="muted">Loading posts…</p>
+}
+else
+{
+    <PostList Posts="PagePosts" />
+
+    @if (PageCount > 1)
+    {
+        <nav class="pager" aria-label="Pages">
+            @if (CurrentPage > 1)
+            {
+                <a class="button" href="@PageHref(CurrentPage - 1)">← Newer posts</a>
+            }
+            <span class="muted">Page @CurrentPage of @PageCount</span>
+            @if (CurrentPage < PageCount)
+            {
+                <a class="button" href="@PageHref(CurrentPage + 1)">Older posts →</a>
+            }
+        </nav>
+    }
+}
+
+@code {
+    private const int PageSize = 10;
+
+    [SupplyParameterFromQuery(Name = "page")] public int? PageNumber { get; set; }
+
+    private List<PostMeta>? posts;
+    private bool error;
+
+    private int PageCount => posts is null ? 0 : Math.Max(1, (posts.Count + PageSize - 1) / PageSize);
+    private int CurrentPage => Math.Clamp(PageNumber ?? 1, 1, Math.Max(1, PageCount));
+    private List<PostMeta> PagePosts => posts!.Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToList();
+
+    private static string PageHref(int page) => page == 1 ? "./" : $"?page={page}";
+
+    protected override Task OnInitializedAsync() => LoadAsync();
+
+    private async Task LoadAsync()
+    {
+        error = false;
+        try { posts = await PostService.GetPostsAsync(); }
+        catch (HttpRequestException) { error = true; }
+    }
+}

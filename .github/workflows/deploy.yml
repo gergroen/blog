@@ -1,0 +1,62 @@
+name: Build and deploy blog
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Only one deployment at a time; don't cancel a running deployment.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+env:
+  SITE_URL: https://gergroen.github.io/blog/
+  BASE_PATH: /blog/
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      - name: Test
+        run: dotnet test Blog.slnx -c Release
+
+      - name: Publish
+        run: dotnet publish src/Blog -c Release -o out -p:BlogSiteUrl=$SITE_URL
+
+      - name: Prepare for GitHub Pages
+        run: >
+          dotnet run --project tools/Blog.Indexer -c Release --no-build --
+          postpublish --wwwroot out/wwwroot --base-path "$BASE_PATH" --site-url "$SITE_URL"
+
+      - uses: actions/upload-pages-artifact@v4
+        if: github.event_name != 'pull_request'
+        with:
+          path: out/wwwroot
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

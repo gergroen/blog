@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gergroen - Developer blog with getting started guides</title>
+    <meta name="description" content="Developer blog with getting started guides" />
+    <base href="/" />
+    <script>
+        // GitHub Pages SPA support: 404.html redirects unknown deep links to "/blog/?/post/x".
+        // Restore the real URL before Blazor starts routing.
+        (function (l) {
+            if (l.search[1] === '/') {
+                var decoded = l.search.slice(1).split('&').map(function (s) {
+                    return s.replace(/~and~/g, '&');
+                }).join('?');
+                window.history.replaceState(null, null, l.pathname.slice(0, -1) + decoded + l.hash);
+            }
+        }(window.location));
+    </script>
+    <meta name="theme-color" content="#1f4e8c" />
+    <link rel="preload" id="webassembly" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="stylesheet" href="lib/highlight/styles/stackoverflow-light.min.css" media="(prefers-color-scheme: light)" />
+    <link rel="stylesheet" href="lib/highlight/styles/stackoverflow-dark.min.css" media="(prefers-color-scheme: dark)" />
+    <link rel="stylesheet" href="css/app.css" />
+    <link href="manifest.webmanifest" rel="manifest" />
+    <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
+    <link rel="alternate" type="application/rss+xml" title="Gergroen" href="feed.xml" />
+    <script type="importmap"></script>
+</head>
+
+<body>
+    <div id="app"><p class="app-loading">Loading…</p></div>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="." class="reload">Reload</a>
+        <span class="dismiss">🗙</span>
+    </div>
+    <script src="lib/highlight/highlight.min.js"></script>
+    <script src="lib/highlight/languages/powershell.min.js"></script>
+    <script src="lib/highlight/languages/dockerfile.min.js"></script>
+    <script src="js/blog.js"></script>
+    <script src="_framework/blazor.webassembly#[.{fingerprint}].js"></script>
+</body>
+
+</html>

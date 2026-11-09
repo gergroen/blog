@@ -1,0 +1,32 @@
+@page "/about"
+
+<PageTitle>About - @SiteInfo.Title</PageTitle>
+<HeadContent>
+    <meta name="description" content="About @SiteInfo.Title: @SiteInfo.Description" />
+</HeadContent>
+
+<article class="post">
+    <h1>About</h1>
+    <div class="post-content">
+        <p>
+            Hi, I'm Gergroen. This is my developer blog with short, practical <strong>getting started guides</strong>,
+            mostly about .NET, C# and the tools around them.
+        </p>
+        <p>
+            Every guide aims to take you from nothing to a small working example, with all the code you need.
+        </p>
+        <h2>About this site</h2>
+        <p>
+            This blog is a <a href="https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor">Blazor WebAssembly</a> app,
+            hosted on GitHub Pages. Posts are plain Markdown files in the
+            <a href="@SiteInfo.RepositoryUrl">GitHub repository</a>. You can install it as an app on your device and read
+            posts you've opened before while offline.
+        </p>
+        <p>
+            Previous posts (2020) can still be found on my <a href="https://gergroen.blogspot.com/">old blog</a>.
+        </p>
+        <p>
+            <a href="@SiteInfo.GitHubUrl">GitHub</a> · <a href="feed.xml">RSS feed</a>
+        </p>
+    </div>
+</article>

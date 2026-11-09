@@ -1,0 +1,28 @@
+﻿@inherits LayoutComponentBase
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+    <div class="container header-inner">
+        <a class="brand" href="">
+            <img src="icon-192.png" alt="" width="32" height="32" />
+            <span>@SiteInfo.Title</span>
+        </a>
+        <nav class="site-nav" aria-label="Main">
+            <NavLink href="" Match="NavLinkMatch.All">Posts</NavLink>
+            <NavLink href="tags">Tags</NavLink>
+            <NavLink href="about">About</NavLink>
+            <a href="feed.xml" title="RSS feed">RSS</a>
+        </nav>
+    </div>
+</header>
+
+<main id="main" class="container" tabindex="-1">
+    @Body
+</main>
+
+<footer class="site-footer">
+    <div class="container">
+        <p>© @DateTime.Now.Year @SiteInfo.Author · <a href="@SiteInfo.RepositoryUrl">Source on GitHub</a></p>
+    </div>
+</footer>

@@ -1,0 +1,52 @@
+@page "/tags"
+@page "/tags/{Tag}"
+@inject PostService PostService
+
+@if (error)
+{
+    <LoadError OnRetry="LoadAsync" />
+}
+else if (tags is null || posts is null)
+{
+    <p class="muted">Loading…</p>
+}
+else if (string.IsNullOrEmpty(Tag))
+{
+    <PageTitle>Tags - @SiteInfo.Title</PageTitle>
+    <h1>Tags</h1>
+    <ul class="tags tag-cloud">
+        @foreach (var (tag, count) in tags)
+        {
+            <li><a class="tag" href="tags/@Slugs.ForTag(tag)">@tag <span class="count">@count</span></a></li>
+        }
+    </ul>
+}
+else
+{
+    var name = tags.FirstOrDefault(t => Slugs.ForTag(t.Tag) == Tag).Tag ?? Tag;
+    <PageTitle>@name - @SiteInfo.Title</PageTitle>
+    <p><a href="tags">← All tags</a></p>
+    <h1>Posts tagged “@name”</h1>
+    <PostList Posts="posts.Where(p => p.Tags.Any(t => Slugs.ForTag(t) == Tag)).ToList()" />
+}
+
+@code {
+    [Parameter] public string? Tag { get; set; }
+
+    private List<(string Tag, int Count)>? tags;
+    private List<PostMeta>? posts;
+    private bool error;
+
+    protected override Task OnInitializedAsync() => LoadAsync();
+
+    private async Task LoadAsync()
+    {
+        error = false;
+        try
+        {
+            posts = await PostService.GetPostsAsync();
+            tags = await PostService.GetTagsAsync();
+        }
+        catch (HttpRequestException) { error = true; }
+    }
+}

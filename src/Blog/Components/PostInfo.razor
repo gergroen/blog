@@ -1,0 +1,18 @@
+<p class="post-info">
+    <time datetime="@Post.Date.ToString("yyyy-MM-dd")">@Post.Date.ToString("MMMM d, yyyy", System.Globalization.CultureInfo.InvariantCulture)</time>
+    <span aria-hidden="true">·</span>
+    <span>@Post.ReadingMinutes min read</span>
+</p>
+@if (Post.Tags.Count > 0)
+{
+    <ul class="tags" aria-label="Tags">
+        @foreach (var tag in Post.Tags)
+        {
+            <li><a class="tag" href="tags/@Slugs.ForTag(tag)">@tag</a></li>
+        }
+    </ul>
+}
+
+@code {
+    [Parameter, EditorRequired] public PostMeta Post { get; set; } = default!;
+}

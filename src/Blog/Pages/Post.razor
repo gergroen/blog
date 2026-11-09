@@ -1,0 +1,88 @@
+@page "/post/{Slug}"
+@inject PostService PostService
+@inject IJSRuntime JS
+
+@if (error)
+{
+    <PageTitle>@SiteInfo.Title</PageTitle>
+    <LoadError OnRetry="LoadAsync" />
+}
+else if (loading)
+{
+    <p class="muted">Loading…</p>
+}
+else if (post is null)
+{
+    <PageTitle>Post not found - @SiteInfo.Title</PageTitle>
+    <h1>Post not found</h1>
+    <p>This post doesn't exist (anymore). <a href="">Browse all posts</a>.</p>
+}
+else
+{
+    <PageTitle>@post.Title - @SiteInfo.Title</PageTitle>
+    <HeadContent>
+        <meta name="description" content="@(post.Summary.Length > 0 ? post.Summary : post.Title)" />
+    </HeadContent>
+
+    <article class="post">
+        <header>
+            <h1>@post.Title</h1>
+            <PostInfo Post="post" />
+        </header>
+        <div class="post-content" @ref="content">@((MarkupString)html!)</div>
+    </article>
+
+    <nav class="post-nav" aria-label="More posts">
+        @if (newer is not null)
+        {
+            <a href="post/@newer.Slug"><small>Newer</small>@newer.Title</a>
+        }
+        else
+        {
+            <span></span>
+        }
+        @if (older is not null)
+        {
+            <a class="older" href="post/@older.Slug"><small>Older</small>@older.Title</a>
+        }
+    </nav>
+}
+
+@code {
+    [Parameter] public string Slug { get; set; } = "";
+
+    private PostMeta? post, newer, older;
+    private string? html;
+    private bool loading = true, error, highlight;
+    private ElementReference content;
+
+    protected override Task OnParametersSetAsync() => LoadAsync();
+
+    private async Task LoadAsync()
+    {
+        loading = true;
+        error = false;
+        try
+        {
+            var posts = await PostService.GetPostsAsync();
+            var index = posts.FindIndex(p => string.Equals(p.Slug, Slug, StringComparison.OrdinalIgnoreCase));
+            post = index >= 0 ? posts[index] : null;
+            newer = index > 0 ? posts[index - 1] : null;
+            older = index >= 0 && index < posts.Count - 1 ? posts[index + 1] : null;
+            html = post is null ? null : await PostService.GetHtmlAsync(post);
+            highlight = post is not null;
+        }
+        catch (HttpRequestException)
+        {
+            error = true;
+        }
+        loading = false;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!highlight) return;
+        highlight = false;
+        await JS.InvokeVoidAsync("blog.highlight", content);
+    }
+}
