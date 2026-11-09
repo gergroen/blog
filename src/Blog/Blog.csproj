@@ -43,7 +43,7 @@
       <Output TaskParameter="TargetOutputs" ItemName="_BlogIndexerPath" />
     </MSBuild>
     <PropertyGroup>
-      <_BlogIndexerArgs>index --posts "$(MSBuildProjectDirectory)\wwwroot\posts" --out "$(MSBuildProjectDirectory)\wwwroot" --site-url "$(BlogSiteUrl)"</_BlogIndexerArgs>
+      <_BlogIndexerArgs>index --posts "$(MSBuildProjectDirectory)/wwwroot/posts" --out "$(MSBuildProjectDirectory)/wwwroot" --site-url "$(BlogSiteUrl)"</_BlogIndexerArgs>
       <_BlogIndexerArgs Condition="'$(BlogIncludeDrafts)' == 'true'">$(_BlogIndexerArgs) --include-drafts</_BlogIndexerArgs>
     </PropertyGroup>
     <Exec Command="dotnet &quot;@(_BlogIndexerPath)&quot; $(_BlogIndexerArgs)" />
